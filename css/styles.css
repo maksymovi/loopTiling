@@ -1,0 +1,23 @@
+div.matrix-cell {
+    border: 1px solid red;
+    height: 10px;
+    width: 10px;
+    padding: 0;
+    display: inline-block;
+    background-color: hsl(189, 63%, 61%);
+}
+
+div.matrix-row {
+    line-height: 0;
+}
+
+div.matrix-math
+{
+    display: flex;
+    
+}
+
+div.matrix-set
+{
+    display: flex
+}
