@@ -1,4 +1,4 @@
-const defaultColor = [7, 0, 0]
+const defaultColor = [7, 100, 20]
 const maxColor = [7, 0, 100]
 const selectColor = [100, 100, 50]
 
@@ -11,12 +11,13 @@ class loopTilingMatrix {
      * @param {number} cacheSize length of one cache block
      * @param {number} offset offset from start of cache in matrix, defaults to 1 
      */
-    constructor(rows, columns, div, cacheSize, offset= 0) {
+    constructor(rows, columns, div, cacheSize, offset = 0) {
         this.colorMatrix = []; //easier to keep the matrix colors in an array than extract from the document every time and convert to hsl
         this.matrix = [];
         let defColorString = this.hslCondense(defaultColor);
         this.rows = rows;
         this.columns = columns;
+        this.cacheSize = cacheSize;
         for (let i = 0; i < rows; i++) {
             let divRow = [];
             let colorRow = [];
@@ -27,12 +28,10 @@ class loopTilingMatrix {
                 newCell.classList.add("matrix-cell");
                 newCell.style.backgroundColor = defColorString;
                 //add cache border coloring
-                if(offset == 0)
-                {
+                if (offset == 0) {
                     newCell.style.borderLeft = "1px solid blue";
                 }
-                if(offset == cacheSize - 1)
-                {
+                if (offset == cacheSize - 1) {
                     newCell.style.borderRight = "1px solid blue";
                 }
                 newRow.appendChild(newCell);
@@ -123,8 +122,7 @@ class cacheTracker {
      * @constructor
      * @param {number} cacheSize 
      */
-    constructor(cacheSize)
-    {
+    constructor(cacheSize) {
         self.cacheSize = cacheSize;
         self.cacheOrder = [];
         self.cacheHits = 0;
@@ -137,27 +135,23 @@ class cacheTracker {
      * @param {*} value thing we are caching, ie cache lines
      * @returns {boolean} True if cache hit, false if cache miss
      */
-    access(value)
-    {
+    access(value) {
         //array is oldest first, lru last
         let index = self.cacheOrder.indexOf(value); //check if already in array
-        if(index == -1) //cache miss
+        if (index == -1) //cache miss
         {
             //append to end, shift if above max
-            if(self.cacheOrder.length >= cacheSize)
-            {
+            if (self.cacheOrder.length >= cacheSize) {
                 self.cacheOrder.shift();
             }
             self.cacheOrder.push(value);
             self.cacheMisses++;
             return false; //miss returns false
         }
-        else
-        {   //cache hit
+        else {   //cache hit
             //correct lru status
-            for(let i = index; i < self.cacheOrder.length - 1; i++)
-            {
-                self.cacheOrder[i] = self.cacheOrder[i+1];
+            for (let i = index; i < self.cacheOrder.length - 1; i++) {
+                self.cacheOrder[i] = self.cacheOrder[i + 1];
             }
             self.cacheOrder[self.cacheOrder.length - 1] = value;
             self.cacheHits++;
@@ -168,8 +162,7 @@ class cacheTracker {
      * Get number of cache hits
      * @returns {number} number of cache hits
      */
-    getCacheHits()
-    {
+    getCacheHits() {
         return self.cacheHits;
     }
 
@@ -177,8 +170,7 @@ class cacheTracker {
      * Get number of cache misses
      * @returns {number} number of cache misses
      */
-    getCacheMisses()
-    {
+    getCacheMisses() {
         return self.cacheMisses;
     }
 }
@@ -188,13 +180,16 @@ class loopTilingSet {
     /**
      * 
      * @param {Generator} algorithmGenerator algorithm generator returns a generator which returns a 3-tuple, row, col of the result matrix and an index
-     * @param {number} stepPeriod time in miliseconds to step
+     * @param {number} stepPeriod time in milliseconds to step
      * @param {number} mat1height height of first matrix multiplied
      * @param {number} common width of first matrix and height of second matrix
      * @param {number} mat2width width of second matrix multiplied
      * @param {Element} div div to stuff everything into
+     * @param {number} cacheStorage how many cache lines we can store
+     * @param {number} cacheSize size of one cache line in cells
+     * @param {number} offset number of cells from start of cache line
      */
-    constructor(algorithmGenerator, stepPeriod, mat1height, common, mat2width, div, cacheStorage=16, cacheSize = 16, offset = 0) {
+    constructor(algorithmGenerator, stepPeriod, mat1height, common, mat2width, div, cacheStorage = 16, cacheSize = 16, offset = 0) {
 
 
         //matrix creation formatting
@@ -204,14 +199,20 @@ class loopTilingSet {
 
         clone = clone.children[0];
 
+        let matrixDivs = clone.children[0];
+        let valueDivs = clone.children[1];
 
-        let mat1Div = clone.children[0];
-        let mat2Div = clone.children[2];
-        let resultDiv = clone.children[4];
 
-        this.mat1 = new loopTilingMatrix(common, mat1height, mat1Div, cacheSize, offset);
-        this.mat2 = new loopTilingMatrix(mat2width, common, mat2Div, cacheSize, offset);
-        this.result = new loopTilingMatrix(mat2width, mat1height, resultDiv, cacheSize, offset);
+        let mat1Div = matrixDivs.children[0];
+        let mat2Div = matrixDivs.children[2];
+        let resultDiv = matrixDivs.children[4];
+        this.cacheMissDiv = valueDivs.children[0];
+        this.cacheHitDiv = valueDivs.children[1];
+        this.hitRatioDiv = valueDivs.children[2];
+
+        this.mat1 = new loopTilingMatrix(mat1height, common, mat1Div, cacheSize, offset);
+        this.mat2 = new loopTilingMatrix(common, mat2width, mat2Div, cacheSize, offset);
+        this.result = new loopTilingMatrix(mat1height, mat2width, resultDiv, cacheSize, offset);
 
         div.appendChild(clone);
 
@@ -223,26 +224,30 @@ class loopTilingSet {
         this.common = common;
         this.mat2width = mat2width;
         this.cacheSize = cacheSize;
-        this.offset = offset;
+        this.offset = offset % cacheSize; //offset must be less than cacheSize
         //setup cache trackers, common cache tracker for all arrays
-        this.cacheTrack = cacheTracker(cacheStorage);
+        this.cacheTrack = new cacheTracker(cacheStorage);
+        //using ints for cache of all three matricies, need a constant difference to make sure they never overlap
+        //perhaps its better to use a cache tracker for each its better to have one common amount of cache being accessed.
+        this.cacheStep = 2 * Math.pow(Math.max(this.mat1height, this.mat2width, this.common), 2);
 
 
-
-        //spawn thread to deal with loop tiling
-
+    }
+    /**
+     * Starts the simulation
+     */
+    start() {
         this.iterateMultiplication()
-
     }
     /** Sleeps for a certain amount of time when paired with an await
      * @private
      * @param {number} ms Time in milliseconds to sleep for
-     * @returns Promise resolving after a certain amoutn of ms
+     * @returns Promise resolving after a certain amount of ms
      */
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    
+
     /**
      * @async
      * @private
@@ -257,28 +262,37 @@ class loopTilingSet {
 
         for (let value of this.algorithmGenerator) {
             let [row, col, index] = value;
+            //execute reads/writes
+
             //save old colors to process later
             let mat1Color = this.mat1.getColor(row, index);
             let mat2Color = this.mat2.getColor(index, col);
-
-            let resultColor = this.result.getColor(row, col)
-
+            //set colors temporarily to the "select colors"
             this.mat1.setColor(row, index, selectColor);
             this.mat2.setColor(index, col, selectColor);
 
+
+            //store tuples to track cache access
+            //first matrix access
+            this.cacheTrack.access(Math.floor((this.offset + row * this.mat1.columns + index) / this.cacheSize));
+            this.cacheTrack.access(Math.floor((this.offset + index * this.mat2.columns + col + this.cacheStep) / this.cacheSize));
+            this.cacheTrack.access(Math.floor((this.offset + row * this.result.columns + col + 2 * this.cacheStep) / this.cacheSize));
+
+            this.cacheMissDiv.innerHTML = "Cache Misses: " + this.cacheTrack.getCacheMisses().toString();
+            this.cacheHitDiv.innerHTML = "Cache Hits: " + this.cacheTrack.getCacheHits().toString();
+            this.hitRatioDiv.innerHTML = "Cache Hit Ratio: " + (this.cacheTrack.getCacheHits() / (this.cacheTrack.getCacheHits() + this.cacheTrack.getCacheMisses())).toFixed(5);
+
             //mat1Color[2]++;
             //mat2Color[2]++;
-            for (let i = 0; i < 3; i++)
-                resultColor[i] += colorDelta[i]; //changing color of result.
-            
+            //for (let i = 0; i < 3; i++)
+            //    resultColor[i] += colorDelta[i]; //changing color of result.
+
             await this.sleep(this.stepPeriod);
 
-
+            //restore colors, have new color be added to result
             this.mat1.setColor(row, index, mat1Color);
-
             this.mat2.setColor(index, col, mat2Color);
-
-            this.result.setColor(row, col, resultColor);
+            this.result.addColor(row, col, colorDelta);
 
         }
     }
@@ -310,19 +324,32 @@ function* looptilingMatrixMultGenerator(mat1height, mat2width, common, blockSize
         }
     }
     return
+}
 
+function* doubleRowGenerator(mat1height, mat2width, common) {
+    for (let i = 0; i < mat1height; i++) {
+        for (let j = 0; j < mat2width; j++) {
+            for (let k = 0; k < common; k++) {
+                yield [i, j, k];
+            }
+        }
+    }
+    return null;
 }
 
 function matrixTest() {
     let div = document.getElementById("looptiling");
 
-    let mat1height = 32;
-    let mat2width = 32;
-    let common = 32;
+    let mat1height = 27;
+    let mat2width = 8;
+    let common = 30;
 
-    generator = standardMatrixMultGenerator(mat1height, mat2width, common)
-    //generator = looptilingMatrixMultGenerator(mat1height, mat2width, common, 6);
-    let lts = new loopTilingSet(generator, 16.6666667, mat1height, common, mat2width, div);
+    //generator = standardMatrixMultGenerator(mat1height, mat2width, common);
+    generator = doubleRowGenerator(mat1height, mat2width, common)
+    //generator = looptilingMatrixMultGenerator(mat1height, mat2width, common, 8);
+    let lts = new loopTilingSet(generator, 10, mat1height, common, mat2width, div, 4);
+
+    lts.start();
 
 
 }
