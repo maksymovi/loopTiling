@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <rect x="300" width="200" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <rect x="600" width="200" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="99.725" y1="0.797" x2="100" y2="200"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="-0.82" y1="99.936" x2="200" y2="100"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="300.112" y1="100.639" x2="500" y2="100"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="400.658" y1="0.797" x2="400" y2="200"/>
+  <rect x="9.122" y="7.333" width="179.588" height="16.068" style="stroke: rgb(0, 0, 0); fill: rgb(255, 0, 0);"/>
+  <rect x="220.412" y="23.401" width="179.588" height="16.068" style="stroke: rgb(0, 0, 0); fill: rgb(255, 0, 0);" transform="matrix(0, 1, -1, 0, 347.179199, -208.752258)"/>
+  <rect x="607.194" y="7.333" width="16" height="16" style="stroke: rgb(0, 0, 0); fill: rgb(255, 0, 0);"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="227.054" y1="100.025" x2="272.854" y2="99.936" transform="matrix(0.707107, -0.707107, 0.707107, 0.707107, 2.512943, 206.027786)"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="227.054" y1="100.025" x2="272.854" y2="99.936" transform="matrix(0.707107, 0.707107, -0.707107, 0.707107, 143.906723, -147.460556)"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="533.341" y1="90.626" x2="573.989" y2="90.403"/>
+  <line style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" x1="533.341" y1="109.519" x2="573.989" y2="109.296"/>
+</svg>
