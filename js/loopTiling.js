@@ -387,8 +387,8 @@ export function* matrixMultGen(mat1height, mat2width, common, blockSize1, blockS
  */
 export function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineSize, offset = 0)
 {
-    currentMax = 0.0;
-    maxSettings = [0, 0, 0];
+    let currentMax = 0.0;
+    let maxSettings = [0, 0, 0];
     //avoids cache collisions as in loopTilingSet
     let cacheStep = 2 * Math.pow(Math.max(mat1height, mat2width, common), 2);
     for (let i = 1; i <= mat1height; i++)
@@ -434,7 +434,7 @@ function matrixMultExample()
     let mat2width = 16;
     let common = 16;
 
-    generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
+    let generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
     let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 8, 16);
 }
 
@@ -445,9 +445,9 @@ function matrixMultExample()
  */
 function bestTilingExample()
 {
-    let mat1height = 14;
-    let mat2width = 14;
-    let common = 14;
+    let mat1height = 16;
+    let mat2width = 16;
+    let common = 16;
     let cacheLineCount = 20;
     let cacheLineSize = 8;
     let offset = 0;
@@ -455,5 +455,5 @@ function bestTilingExample()
     console.log(ret);
 }
 
-//matrixMultExample();
+matrixMultExample();
 //bestTilingExample();
