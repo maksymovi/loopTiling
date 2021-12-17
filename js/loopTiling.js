@@ -455,5 +455,5 @@ function bestTilingExample()
     console.log(ret);
 }
 
-matrixMultExample();
+//matrixMultExample();
 //bestTilingExample();
