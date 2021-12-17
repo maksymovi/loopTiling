@@ -267,7 +267,7 @@ class loopTilingSet
         this.cacheMisses = 0;
         this.cacheHitRatio = 1.0;
 
-        div.addEventListener("click", () => this.run(), {once: true}); //hacky way to log onclick
+        div.addEventListener("click", () => this.run(), { once: true }); //hacky way to log onclick
     }
     /** Sleeps for a certain amount of time when paired with an await
      * @private
@@ -407,14 +407,14 @@ function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineS
                     cacheTrack.access(Math.floor((offset + index * mat2width + col + cacheStep) / cacheLineSize));
                     cacheTrack.access(Math.floor((offset + row * mat2width + col + 2 * cacheStep) / cacheLineSize));
                 }
-                let hitRatio = cacheTrack.getCacheHits()/(cacheTrack.getCacheMisses() + cacheTrack.getCacheHits());
+                let hitRatio = cacheTrack.getCacheHits() / (cacheTrack.getCacheMisses() + cacheTrack.getCacheHits());
                 if (currentMax <= hitRatio) //check if better than previous best
                 {
-                    console.log( currentMax == hitRatio ? [hitRatio, [i, j, k]].toString() + " is equal to last" : ("Bumped with " + [hitRatio, [i, j, k]].toString()));
+                    console.log(currentMax == hitRatio ? [hitRatio, [i, j, k]].toString() + " is equal to last" : ("Bumped with " + [hitRatio, [i, j, k]].toString()));
                     currentMax = hitRatio;
                     maxSettings = [i, j, k];
-                    
-                    
+
+
                 }
                 delete cacheTrack;
             }
@@ -426,19 +426,17 @@ function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineS
 /**
  * Example on how to create visualize matrix multiplication
  */
- function matrixMultExample()
- {
-     let div = document.getElementById("looptiling");
- 
-     let mat1height = 50;
-     let mat2width = 50;
-     let common = 50;
- 
-     generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
-     let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
- 
-    //lts.run;
- }
+function matrixMultExample()
+{
+    let div = document.getElementById("looptiling");
+
+    let mat1height = 50;
+    let mat2width = 50;
+    let common = 50;
+
+    generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
+    let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
+}
 
 
 
