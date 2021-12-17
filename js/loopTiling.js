@@ -267,6 +267,7 @@ class loopTilingSet
         this.cacheMisses = 0;
         this.cacheHitRatio = 1.0;
 
+        div.addEventListener("click", () => this.run(), {once: true}); //hacky way to log onclick
     }
     /** Sleeps for a certain amount of time when paired with an await
      * @private
@@ -280,12 +281,10 @@ class loopTilingSet
 
     /**
      * @async
-     * @private
      * Runs matrix multiplication visualization
      */
     async run()
     {
-
         let colorDelta = []
         for (let i = 0; i < 3; i++)
             //change color of result cell by a delta every time to reach a final maxColor value
@@ -295,6 +294,7 @@ class loopTilingSet
         {
             let [row, col, index] = value;
             //first we do the cache hit stuff
+            //execute reads/writes
             this.mat1Misses += this.cacheTrack.access(Math.floor((this.offset + row * this.mat1.columns + index) / this.cacheLineSize)) ? 0 : 1;
             this.mat2Misses += this.cacheTrack.access(Math.floor((this.offset + index * this.mat2.columns + col + this.cacheStep) / this.cacheLineSize)) ? 0 : 1;
             this.resultMisses += this.cacheTrack.access(Math.floor((this.offset + row * this.result.columns + col + 2 * this.cacheStep) / this.cacheLineSize)) ? 0 : 1;
@@ -306,10 +306,6 @@ class loopTilingSet
 
             if (this.stepPeriod >= 0) //negative sleep implies only simulation, thus only draw the html in this case
             {
-
-
-                //execute reads/writes
-
                 //save old colors to process later
                 let mat1Color = this.mat1.getColor(row, index);
                 let mat2Color = this.mat2.getColor(index, col);
@@ -338,6 +334,7 @@ class loopTilingSet
             }
 
         }
+        //TODO: add click to restart simulation possibly
         return this.cacheHitRatio;
     }
 }
@@ -440,7 +437,7 @@ function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineS
      generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
      let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
  
-     lts.run();
+    //lts.run;
  }
 
 
@@ -464,3 +461,11 @@ function bestTilingExample()
 //bestTilingExample();
 
 
+let div = document.getElementById("looptiling");
+ 
+let mat1height = 50;
+let mat2width = 50;
+let common = 50;
+
+generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
+let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
