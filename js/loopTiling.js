@@ -237,6 +237,7 @@ export class loopTilingSet
         this.cacheMissDiv = valueDivs.children[0];
         this.cacheHitDiv = valueDivs.children[1];
         this.hitRatioDiv = valueDivs.children[2];
+        valueDivs.children[3].innerHTML = "Cache can store " + cacheLineCount.toString() + " cache lines";
 
         this.mat1 = new loopTilingMatrix(mat1height, common, this.mat1Div, cacheLineSize, offset);
         this.mat2 = new loopTilingMatrix(common, mat2width, this.mat2Div, cacheLineSize, offset);
@@ -445,10 +446,10 @@ function matrixMultExample()
  */
 function bestTilingExample()
 {
-    let mat1height = 16;
-    let mat2width = 16;
-    let common = 16;
-    let cacheLineCount = 20;
+    let mat1height = 14;
+    let mat2width = 14;
+    let common = 14;
+    let cacheLineCount = 10;
     let cacheLineSize = 8;
     let offset = 0;
     let ret = getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineSize, offset);
