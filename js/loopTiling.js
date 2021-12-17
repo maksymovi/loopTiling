@@ -459,13 +459,3 @@ function bestTilingExample()
 
 //matrixMultExample();
 //bestTilingExample();
-
-
-let div = document.getElementById("looptiling");
- 
-let mat1height = 50;
-let mat2width = 50;
-let common = 50;
-
-generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
-let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
