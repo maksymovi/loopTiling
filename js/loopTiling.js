@@ -144,10 +144,10 @@ class cacheTracker
      */
     constructor(cacheSize)
     {
-        self.cacheSize = cacheSize;
-        self.cacheOrder = [];
-        self.cacheHits = 0;
-        self.cacheMisses = 0;
+        this.cacheSize = cacheSize;
+        this.cacheOrder = [];
+        this.cacheHits = 0;
+        this.cacheMisses = 0;
     }
 
     //TODO: possibly correct this to differentiate full and less full cache for efficiency
@@ -159,26 +159,26 @@ class cacheTracker
     access(value)
     {
         //array is oldest first, lru last
-        let index = self.cacheOrder.indexOf(value); //check if already in array
+        let index = this.cacheOrder.indexOf(value); //check if already in array
         if (index == -1) //cache miss
         {
             //append to end, shift if above max
-            if (self.cacheOrder.length >= cacheSize)
+            if (this.cacheOrder.length >= this.cacheSize)
             {
-                self.cacheOrder.shift();
+                this.cacheOrder.shift();
             }
-            self.cacheOrder.push(value);
-            self.cacheMisses++;
+            this.cacheOrder.push(value);
+            this.cacheMisses++;
             return false; //miss returns false
         } else
         { //cache hit
             //correct lru status
-            for (let i = index; i < self.cacheOrder.length - 1; i++)
+            for (let i = index; i < this.cacheOrder.length - 1; i++)
             {
-                self.cacheOrder[i] = self.cacheOrder[i + 1];
+                this.cacheOrder[i] = this.cacheOrder[i + 1];
             }
-            self.cacheOrder[self.cacheOrder.length - 1] = value;
-            self.cacheHits++;
+            this.cacheOrder[this.cacheOrder.length - 1] = value;
+            this.cacheHits++;
             return true; //hit returns true
         }
     }
@@ -188,7 +188,7 @@ class cacheTracker
      */
     getCacheHits()
     {
-        return self.cacheHits;
+        return this.cacheHits;
     }
 
     /**
@@ -197,7 +197,7 @@ class cacheTracker
      */
     getCacheMisses()
     {
-        return self.cacheMisses;
+        return this.cacheMisses;
     }
 }
 
@@ -430,12 +430,12 @@ function matrixMultExample()
 {
     let div = document.getElementById("looptiling");
 
-    let mat1height = 50;
-    let mat2width = 50;
-    let common = 50;
+    let mat1height = 16;
+    let mat2width = 16;
+    let common = 16;
 
     generator = matrixMultGen(mat1height, mat2width, common, 8, 10, 1);
-    let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 30, 8);
+    let lts = new loopTilingSet(generator, 1, mat1height, common, mat2width, div, 8, 16);
 }
 
 
