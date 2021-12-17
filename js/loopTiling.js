@@ -136,7 +136,7 @@ class loopTilingMatrix
 /**
  * Tracks cache hits and misses
  */
-class cacheTracker
+export class cacheTracker
 {
     /** 
      * @constructor
@@ -202,7 +202,7 @@ class cacheTracker
 }
 
 
-class loopTilingSet
+export class loopTilingSet
 {
     /**
      * 
@@ -350,7 +350,7 @@ class loopTilingSet
  * @param {number} blockSize3 Third tile size parameter, tune from 1 to common
  * @returns a 3-tuple containing the row, column and "index" to compute in the result matrix
  */
-function* matrixMultGen(mat1height, mat2width, common, blockSize1, blockSize2, blockSize3)
+export function* matrixMultGen(mat1height, mat2width, common, blockSize1, blockSize2, blockSize3)
 {
     for (let ii = 0; ii < mat1height; ii += blockSize1)
     {
@@ -385,7 +385,7 @@ function* matrixMultGen(mat1height, mat2width, common, blockSize1, blockSize2, b
  * @param {number} offset 
  * @returns 2-tuple, first containing hit rate, second containing an array with optimal params to matrixMultGen
  */
-function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineSize, offset = 0)
+export function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineSize, offset = 0)
 {
     currentMax = 0.0;
     maxSettings = [0, 0, 0];
@@ -416,7 +416,7 @@ function getBestTiling(mat1height, mat2width, common, cacheLineCount, cacheLineS
 
 
                 }
-                delete cacheTrack;
+                //delete cacheTrack; //probably omit
             }
         }
     }
